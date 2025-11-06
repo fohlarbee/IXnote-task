@@ -1,4 +1,5 @@
 import swaggerJsdoc from "swagger-jsdoc";
+import path from "path";
 
 const swaggerDefinition = {
   openapi: "3.0.0",
@@ -17,7 +18,7 @@ const swaggerDefinition = {
       description: "Development server",
     },
     {
-      url: "https://your-production-url.com",
+      url: "https://web-production-3c6f.up.railway.app",
       description: "Production server",
     },
   ],
@@ -165,9 +166,22 @@ const swaggerDefinition = {
   ],
 };
 
+const routesPath = path.join(process.cwd(), "src", "routes");
+
 const options = {
   definition: swaggerDefinition,
-  apis: ["./src/routes/*.ts"],
+  apis: [path.join(routesPath, "*.ts"), path.join(routesPath, "*.js")],
 };
 
-export const swaggerSpec = swaggerJsdoc(options);
+const swaggerSpec = swaggerJsdoc(options) as {
+  paths?: Record<string, unknown>;
+};
+
+if (!swaggerSpec.paths || Object.keys(swaggerSpec.paths).length === 0) {
+  console.warn(
+    "Warning: No Swagger paths found. Check if route files contain @swagger JSDoc comments."
+  );
+  console.warn("Routes path:", routesPath);
+}
+
+export { swaggerSpec };
