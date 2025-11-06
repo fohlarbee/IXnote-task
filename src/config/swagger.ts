@@ -167,34 +167,24 @@ const swaggerDefinition = {
   ],
 };
 
+export { swaggerDefinition };
+
 const isProduction = process.env.NODE_ENV === "production";
+const swaggerJsonPath = path.join(__dirname, "../swagger.json");
 
-const distRoutesPath = path.join(__dirname, "../routes");
-const srcRoutesPath = path.join(process.cwd(), "src", "routes");
+let swaggerSpec: { paths?: Record<string, unknown> };
 
-const apiPaths: string[] = [];
-
-if (isProduction) {
-  if (fs.existsSync(distRoutesPath)) {
-    apiPaths.push(path.join(distRoutesPath, "*.js"));
-    apiPaths.push(path.join(distRoutesPath, "*.ts"));
-  }
-  if (fs.existsSync(srcRoutesPath)) {
-    apiPaths.push(path.join(srcRoutesPath, "*.ts"));
-    apiPaths.push(path.join(srcRoutesPath, "*.js"));
-  }
+if (isProduction && fs.existsSync(swaggerJsonPath)) {
+  swaggerSpec = JSON.parse(fs.readFileSync(swaggerJsonPath, "utf-8"));
 } else {
-  apiPaths.push(path.join(srcRoutesPath, "*.ts"));
-  apiPaths.push(path.join(srcRoutesPath, "*.js"));
+  const srcRoutesPath = path.join(process.cwd(), "src", "routes");
+  const options = {
+    definition: swaggerDefinition,
+    apis: [path.join(srcRoutesPath, "*.ts"), path.join(srcRoutesPath, "*.js")],
+  };
+  swaggerSpec = swaggerJsdoc(options) as {
+    paths?: Record<string, unknown>;
+  };
 }
-
-const options = {
-  definition: swaggerDefinition,
-  apis: apiPaths,
-};
-
-const swaggerSpec = swaggerJsdoc(options) as {
-  paths?: Record<string, unknown>;
-};
 
 export { swaggerSpec };
