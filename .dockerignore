@@ -8,4 +8,5 @@ README.md
 .idea
 *.log
 .DS_Store
+!swagger.json
 

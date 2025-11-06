@@ -36,7 +36,11 @@ const swaggerDefinition = {
         type: "object",
         properties: {
           id: { type: "string", description: "User ID" },
-          email: { type: "string", format: "email", description: "User email address" },
+          email: {
+            type: "string",
+            format: "email",
+            description: "User email address",
+          },
           name: { type: "string", description: "User full name" },
         },
       },
@@ -111,4 +115,3 @@ fs.writeFileSync(distOutputPath, JSON.stringify(swaggerSpec, null, 2));
 
 console.log("Swagger JSON generated at:", rootOutputPath);
 console.log("Swagger JSON copied to:", distOutputPath);
-
