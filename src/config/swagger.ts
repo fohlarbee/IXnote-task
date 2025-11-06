@@ -1,6 +1,5 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import path from "path";
-import fs from "fs";
 
 const swaggerDefinition = {
   openapi: "3.0.0",
@@ -170,21 +169,23 @@ const swaggerDefinition = {
 export { swaggerDefinition };
 
 const isProduction = process.env.NODE_ENV === "production";
-const swaggerJsonPath = path.join(__dirname, "../swagger.json");
 
-let swaggerSpec: { paths?: Record<string, unknown> };
-
-if (isProduction && fs.existsSync(swaggerJsonPath)) {
-  swaggerSpec = JSON.parse(fs.readFileSync(swaggerJsonPath, "utf-8"));
+let routesPath: string;
+if (isProduction) {
+  routesPath = path.join(__dirname, "../routes");
 } else {
-  const srcRoutesPath = path.join(process.cwd(), "src", "routes");
-  const options = {
-    definition: swaggerDefinition,
-    apis: [path.join(srcRoutesPath, "*.ts"), path.join(srcRoutesPath, "*.js")],
-  };
-  swaggerSpec = swaggerJsdoc(options) as {
-    paths?: Record<string, unknown>;
-  };
+  routesPath = path.join(process.cwd(), "src", "routes");
 }
+
+const options = {
+  definition: swaggerDefinition,
+  apis: isProduction
+    ? [path.join(routesPath, "*.js")]
+    : [path.join(routesPath, "*.ts")],
+};
+
+const swaggerSpec = swaggerJsdoc(options) as {
+  paths?: Record<string, unknown>;
+};
 
 export { swaggerSpec };
