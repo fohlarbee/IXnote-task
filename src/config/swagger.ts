@@ -1,5 +1,6 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import path from "path";
+import fs from "fs";
 
 const swaggerDefinition = {
   openapi: "3.0.0",
@@ -166,11 +167,30 @@ const swaggerDefinition = {
   ],
 };
 
-const routesPath = path.join(process.cwd(), "src", "routes");
+const isProduction = process.env.NODE_ENV === "production";
+
+const distRoutesPath = path.join(__dirname, "../routes");
+const srcRoutesPath = path.join(process.cwd(), "src", "routes");
+
+const apiPaths: string[] = [];
+
+if (isProduction) {
+  if (fs.existsSync(distRoutesPath)) {
+    apiPaths.push(path.join(distRoutesPath, "*.js"));
+    apiPaths.push(path.join(distRoutesPath, "*.ts"));
+  }
+  if (fs.existsSync(srcRoutesPath)) {
+    apiPaths.push(path.join(srcRoutesPath, "*.ts"));
+    apiPaths.push(path.join(srcRoutesPath, "*.js"));
+  }
+} else {
+  apiPaths.push(path.join(srcRoutesPath, "*.ts"));
+  apiPaths.push(path.join(srcRoutesPath, "*.js"));
+}
 
 const options = {
   definition: swaggerDefinition,
-  apis: [path.join(routesPath, "*.ts"), path.join(routesPath, "*.js")],
+  apis: apiPaths,
 };
 
 const swaggerSpec = swaggerJsdoc(options) as {
