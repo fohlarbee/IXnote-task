@@ -14,11 +14,11 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "http://localhost:5000",
+      url: "http://localhost:5000/api",
       description: "Development server",
     },
     {
-      url: "https://web-production-3c6f.up.railway.app",
+      url: "https://web-production-3c6f.up.railway.app/api",
       description: "Production server",
     },
   ],
@@ -176,12 +176,5 @@ const options = {
 const swaggerSpec = swaggerJsdoc(options) as {
   paths?: Record<string, unknown>;
 };
-
-if (!swaggerSpec.paths || Object.keys(swaggerSpec.paths).length === 0) {
-  console.warn(
-    "Warning: No Swagger paths found. Check if route files contain @swagger JSDoc comments."
-  );
-  console.warn("Routes path:", routesPath);
-}
 
 export { swaggerSpec };
