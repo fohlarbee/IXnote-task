@@ -7,5 +7,6 @@ dist/
 uploads/
 .vscode/
 .idea/
+!swagger.json
 !dist/swagger.json
 
